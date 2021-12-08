@@ -53,12 +53,11 @@ class DefaultFontFinder:
         'ru': v,
     }
     def __init__(self):
-        from collections import ChainMap
-        self._cache = ChainMap({}, self.PRESET)
+        self._font_names = self.PRESET.copy()
 
     def __call__(self, lang: Lang) -> Fontname:
         try:
-            return self._cache[lang]
+            return self._font_names[lang]
         except KeyError:
             pass
         from .fontfinder import enum_fonts_from_lang
@@ -66,7 +65,7 @@ class DefaultFontFinder:
             font_name = next(enum_fonts_from_lang(lang)).name
         except StopIteration:
             raise FontNotFoundError(f"Couldn't find a font for lang'{lang}'.")
-        self._cache[lang] = font_name
+        self._font_names[lang] = font_name
         return font_name
 
 
