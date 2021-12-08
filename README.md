@@ -49,8 +49,8 @@ from kivy_garden.i18n.localizer import KXLocalizer
 loc = KXLocalizer()
 loc.lang = 'ja'
 print(loc.font_name)  # => 何かの日本語フォント名が出力される
-loc.lang = 'zh-Hant'
-print(loc.font_name)  # => 何かの繁体中文フォント名が出力される
+loc.lang = 'zh'
+print(loc.font_name)  # => 何かの中文フォント名が出力される
 ```
 
 重要なのが`KXLocalizer`が`EventDispatcher`な事で
@@ -126,12 +126,12 @@ class SampleApp(App):
 ```python
 翻訳表 = {
     'tiger': {
-        'zh-Hant': '老虎',
+        'zh': '老虎',
         'ja': '虎',
         'en': 'tiger',
     },
     'apple': {
-        'zh-Hant': '蘋果',
+        'zh': '蘋果',
         'ja': 'りんご',
         'en': 'apple',
     },
@@ -142,11 +142,11 @@ pythonの辞書literalは書きづらいので実際にはYAML形式で翻訳表
 
 ```yaml
 tiger:
-  zh-Hant: 老虎
+  zh: 老虎
   ja: 虎
   en: tiger
 apple:
-  zh-Hant: 蘋果
+  zh: 蘋果
   ja: りんご
   en: apple
 ```
@@ -170,10 +170,10 @@ loc.lang = 'ja'
 print(loc._("tiger"))  # => 虎
 print(loc._("apple"))  # => りんご
 print(loc.font_name)   # => 何かの日本語フォント名
-loc.lang = 'zh^Hant'
+loc.lang = 'zh'
 print(loc._("tiger"))  # => 老虎
 print(loc._("apple"))  # => 蘋果
-print(loc.font_name)   # => 何かの繁体中文フォント名
+print(loc.font_name)   # => 何かの中文フォント名
 ```
 
 そしてこれもなのですがbindingを利かせてあげれば`loc.lang`(現在の言語)に連動して`Label`の`text`と`font_name`が自動で更新されます。
