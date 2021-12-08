@@ -23,15 +23,20 @@ def test_DictBasedTranslator():
             'en': 'Tiger',
         },
     })
-    loc = KXLocalizer(fontfinder=dummy_fontfinder, translator=translator)
+    loc = KXLocalizer(translator=translator)
     loc.lang = 'zh'
     assert loc._("greeting") == '早安'
     assert loc._("tiger") == '老虎'
-    assert loc.font_name == 'zh font'
+    assert loc._("unknown msgid") == 'unknown msgid'
     loc.lang = 'en'
     assert loc._("greeting") == 'morning'
     assert loc._("tiger") == 'Tiger'
-    assert loc.font_name == 'en font'
+    assert loc._("unknown msgid") == 'unknown msgid'
+    loc.lang = 'unknown lang'
+    assert loc._("greeting") == 'greeting'
+    assert loc._("tiger") == 'tiger'
+    assert loc._("unknown msgid") == 'unknown msgid'
+    assert loc.font_name == 'Roboto'
 
 
 def test_GettextTranslator():
@@ -41,15 +46,15 @@ def test_GettextTranslator():
         'test_localizer',
         PurePath(__file__).parent / 'locales',
     )
-    loc = KXLocalizer(fontfinder=dummy_fontfinder, translator=translator)
+    loc = KXLocalizer(translator=translator)
     loc.lang = 'zh'
     assert loc._("greeting") == '早安'
     assert loc._("tiger") == '老虎'
-    assert loc.font_name == 'zh font'
+    assert loc._("unknown msgid") == 'unknown msgid'
     loc.lang = 'en'
     assert loc._("greeting") == 'morning'
     assert loc._("tiger") == 'Tiger'
-    assert loc.font_name == 'en font'
+    assert loc._("unknown msgid") == 'unknown msgid'
 
 
 def test_binding():
