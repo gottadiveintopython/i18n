@@ -35,7 +35,7 @@ class KXLocalizer(EventDispatcher):
         self._fontfinder = fontfinder
         super().__init__(lang=lang)
 
-    def install(self, *, name='l'):
+    def install(self, *, name):
         from kivy.lang import global_idmap
         global_idmap[name] = self
 

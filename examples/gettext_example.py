@@ -33,7 +33,7 @@ class SampleApp(App):
             domain='gettext_example',
             localedir=PurePath(__file__).parent / 'locales',
         )
-        KXLocalizer(translator=translator).install()
+        KXLocalizer(translator=translator).install(name='l')
 
 
 if __name__ == '__main__':

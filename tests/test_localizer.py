@@ -5,10 +5,8 @@ def test_install():
     from kivy.lang import global_idmap
     from kivy_garden.i18n.localizer import KXLocalizer
     loc = KXLocalizer()
-    loc.install()
+    loc.install(name='l')
     assert global_idmap['l'] is loc
-    loc.install(name='l2')
-    assert global_idmap['l2'] is loc
 
 
 def test_DictBasedTranslator():
@@ -69,7 +67,7 @@ def test_binding():
         },
     })
     loc = KXLocalizer(fontfinder=dummy_fontfinder, translator=translator)
-    loc.install()
+    loc.install(name='l')
     label = Builder.load_string(dedent("""
         Label:
             font_name: l.font_name

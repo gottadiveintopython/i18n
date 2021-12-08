@@ -40,7 +40,7 @@ class SampleApp(App):
                 'fr': 'bonjour',
             }
         })
-        KXLocalizer(translator=translator).install()
+        KXLocalizer(translator=translator).install(name='l')
 
 
 if __name__ == '__main__':
