@@ -5,8 +5,6 @@ from kivy.properties import StringProperty, ObjectProperty
 from kivy.event import EventDispatcher
 from kivy.uix.label import Label
 
-from .exceptions import FontNotFoundError
-
 # type hints
 Lang = str
 Msgid = str
@@ -64,7 +62,11 @@ class DefaultFontFinder:
         try:
             font_name = next(enum_fonts_from_lang(lang)).name
         except StopIteration:
-            raise FontNotFoundError(f"Couldn't find a font for lang'{lang}'.")
+            from kivy.logger import Logger
+            Logger.warning(
+                f"kivy_garden.i18n: Couldn't find a font for lang'{lang}'. "
+                "Use Roboto as a fallback.")
+            font_name = 'Roboto'
         self._font_names[lang] = font_name
         return font_name
 
