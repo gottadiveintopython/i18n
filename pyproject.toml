@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kivy_garden.i18n"
-version = "0.1.0.dev0"
+version = "0.1.0.dev1"
 description = "i18n for Kivy"
 authors = ["Nattōsai Mitō <flow4re2c@gmail.com>"]
 license = "MIT"
