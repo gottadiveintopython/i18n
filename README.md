@@ -6,7 +6,7 @@ Kivyアプリの多言語化は面倒くさいです。
 それを怠れば画面には文字に代わって豆腐が表示されてしまいます。
 
 また多くのKivyアプリはフォントをアプリに詰め込むという方法を採っていますが、これも多言語化の際には問題となります。
-フォントを幾つもアプリに詰め込めんでアプリのサイズが数十MB膨れ上がればアプリの利用者は喜ばないでしょう。
+フォントを幾つも詰め込んでアプリのサイズが数十MB膨れ上がればアプリの利用者は喜ばないでしょう。
 
 そこでこのmoduleの出番です。
 このmoduleは文字列を切り替える機能に加えて、**OSにinstall済のフォントの中から各言語用の物を自動で選んでくれます。**
@@ -23,7 +23,7 @@ pip install --pre kivy_garden.i18n
 ### フォントの検索
 
 表示する文字列の切り替えとフォントの切り替えは別々の機能であり、どちらか片方だけ使うこともできます。
-また多言語化には興味はないけどOSにinstall済のフォントを利用して少しでもアプリの容量を減らしたいという人も居るでしょう。
+また多言語化には興味無いもののOSにinstall済のフォントを利用して少しでもアプリの容量を減らしたいという人も居るでしょう。
 そういった人には以下のような使い方がおすすめです。
 
 
@@ -34,9 +34,11 @@ from kivy_garden.i18n.fontfinder import enum_fonts_from_lang
 
 font = next(enum_fonts_from_lang('ja'), None)
 if font is None:
-    print(f"日本語フォントが見つかりませんでした")
+    print("日本語フォントが見つかりませんでした")
 else:
+    print("日本語フォントが見つかりました:", font.name)
     label.font_name = font.name
+    textinput.font_name = font.name
 ```
 
 ### フォントの切り替え
@@ -62,7 +64,7 @@ class KXLocalizer(EventDispatcher):
     _ = ObjectProperty(...)
 ```
 
-bindingを利かせれば`lang`を切り替えた時に`Label`の`font_name`も自動で切り替わるようにできます。
+bindingを利かせれば`lang`を切り替えた時に`Label`の`font_name`も自動で切り替えられます。
 
 ```python
 from kivy.app import App
@@ -83,9 +85,10 @@ class SampleApp(App):
 
     def on_start(self):
         self.loc.lang = 'ja'  # bindingによりLabelには自動で日本語フォントが適用される
+        self.loc.lang = 'ko'  # bindingによりLabelには自動で韓国語フォントが適用される
 ```
 
-また`KXLocalizer.install()`を用いる事で`#:import`無しで`KXLocalizer`をKv言語内で直接参照できるようにもできます。
+また`KXLocalizer.install()`を用いる事で`#:import`無しで`KXLocalizer`をKv言語内で直接参照できます。
 ただしglobal変数を書き換える行為なので使用は自己責任で。
 
 ```python
@@ -103,7 +106,7 @@ Label:
 class SampleApp(App):
     def build(self):
         self.loc = KXLocalizer()
-        self.loc.install(name='l')  # install !!
+        self.loc.install(name='l')  # install
         return Builder.load_string(KV_CODE)
 
     def on_start(self):
@@ -152,6 +155,7 @@ apple:
 ```
 
 ```python
+# pip install pyyaml
 import yaml
 翻訳表 = yaml.safe_load(YAML文字列)
 ```
@@ -163,7 +167,7 @@ from kivy_garden.i18n.localizer import KXLocalizer, DictBasedTranslator
 loc = KXLocalizer(translator=DictBasedTranslator(翻訳表))
 ```
 
-すると既に`loc.lang`(現在の言語)に基づいて適切な翻訳結果が得られるようになっています。
+これで既に`loc.lang`(現在の言語)に基づいて適切な翻訳結果が得られるようになっています。
 
 ```python
 loc.lang = 'ja'
@@ -176,7 +180,7 @@ print(loc._("apple"))  # => 蘋果
 print(loc.font_name)   # => 何かの中文フォント名
 ```
 
-そしてこれもなのですがbindingを利かせてあげれば`loc.lang`(現在の言語)に連動して`Label`の`text`と`font_name`が自動で更新されます。
+そして当然bindingを利かせてあげれば`loc.lang`(現在の言語)に連動して`Label`の`text`と`font_name`が自動で更新されます。
 
 ```python
 from kivy.app import App
@@ -229,7 +233,7 @@ _("123")
 ```
 
 `123`は抜き出してくれても`ABC`と`DEF`は抜き出してくれません。
-というわけでそういったことをしてくれる道具を作りました。
+というわけでそういったことをしてくれる物を作りました。
 
 ```
 python -m kivy_gardem.i18n.extract_msgids_from_string_literals 上記のpythonファイル > ./output.py
@@ -242,4 +246,4 @@ _("DEF")
 ```
 
 このように文字列literal内の翻訳対象文字列をその外に抜き出してくれるので、
-それを`xgettext`に喰わせてあげれば取りこぼしをせずに済みます。
+それを`xgettext`に喰わせてあげれば取りこぼさずに済みます。
