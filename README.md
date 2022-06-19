@@ -14,9 +14,7 @@ Kivyアプリの多言語化は面倒くさいです。
 
 ## install方法
 
-```
-pip install --pre kivy_garden.i18n
-```
+just copy the files
 
 ## 使い方
 
