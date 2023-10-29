@@ -21,7 +21,7 @@ classifiers=[
 ]
 
 packages = [
-    { include = "kivy_garden" },
+    { include = "kivy_garden", from = "src" },
 ]
 
 [tool.poetry.dependencies]
