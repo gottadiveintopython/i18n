@@ -3,9 +3,8 @@ import pytest
 
 @pytest.fixture(scope='module')
 def extract():
-    from kivy_garden.i18n.extract_msgids_from_string_literals import \
-        extract_msgids_from_string_literals as extract
-    return extract
+    from kivy_garden.i18n.utils import extract_msgids_from_string_literals as f
+    return f
 
 
 @pytest.mark.parametrize('input', [

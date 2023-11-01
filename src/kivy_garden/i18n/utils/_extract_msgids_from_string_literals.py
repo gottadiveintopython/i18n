@@ -28,6 +28,16 @@ def extract_msgid(s:str) -> Iterator[str]:
 
 
 def extract_msgids_from_string_literals(python_code: str) -> Iterator[str]:
+    '''
+    .. code-block::
+
+        msgids = extract_msgids_from_string_literals("""
+            Label:
+                font_name: _("AAA")
+                text: _("BBB")
+            """)
+        assert list(msgids) == ["AAA", "BBB"]
+    '''
     return (
         ls
         for s in extract_string_literals(python_code)
@@ -35,18 +45,13 @@ def extract_msgids_from_string_literals(python_code: str) -> Iterator[str]:
     )
 
 
-def main():
+def cli_main():
     import sys
     from pathlib import Path
     from io import StringIO
     output = StringIO()
-    write = output.write
     for file in sys.argv[1:]:
         for ls in extract_msgids_from_string_literals(Path(file).read_text(encoding='utf-8')):
             print(ls, file=output)
     print(output.getvalue())
     output.close()
-
-
-if __name__ == "__main__":
-    main()

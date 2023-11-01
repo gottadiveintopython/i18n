@@ -7,3 +7,4 @@ bin/
 /Pipfile.lock
 /poetry.lock
 /tmp/
+/docs/

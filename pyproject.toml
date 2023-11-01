@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kivy-garden-i18n"
-version = "0.1.0.dev2"
+version = "0.2.0"
 description = "i18n for Kivy"
 authors = ["Nattōsai Mitō <flow4re2c@gmail.com>"]
 license = "MIT"
@@ -31,6 +31,14 @@ python = "^3.9"
 pytest = "^7.4.3"
 Kivy = "^2.2.1"
 
+
+[tool.poetry.group.doc.dependencies]
+sphinx = "^7.2.6"
+sphinx-autobuild = "^2021.3.14"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+extract_msgids_from_string_literals = 'kivy_garden.i18n.utils._extract_msgids_from_string_literals:cli_main'
