@@ -72,6 +72,8 @@ class Test_can_render_lang:
     @p("lang", "zh ko ja".split())
     def test_cjk(self, cjk_font, lang):
         from kivy_garden.i18n.fontfinder import can_render_lang
+        if cjk_font is None:
+            pytest.skip("No CJK font was found on this system.")
         assert can_render_lang(cjk_font, lang)
         assert not can_render_lang("Roboto", lang)
 
