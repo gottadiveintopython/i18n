@@ -14,3 +14,8 @@ It's composed of the following two primary components:
 pip install "kivy-garden-i18n>=0.2<0.3"
 poetry add kivy-garden-i18n@~0.2
 ```
+
+# Tested on
+
+- CPython 3.10 + Kivy 2.2.1
+- CPython 3.11 + Kivy 2.2.1
