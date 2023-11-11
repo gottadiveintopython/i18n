@@ -1,7 +1,5 @@
 __all__ = ('extract_msgids_from_string_literals', )
 
-'''xgettextは文字列literalからは抽出してくれないのでこのscriptを使って抽出する'''
-
 import re
 from typing import Iterator
 
@@ -16,9 +14,9 @@ def extract_string_literals(python_code: str) -> Iterator[str]:
 
 
 PATTERN = re.compile(r"""
-    (^|\W)(_\(".*?"\))  # _("")で括られた文字列
+    (^|\W)_\("(.*?)"\)  # _("")で括られた文字列
     |                   # もしくは
-    (^|\W)(_\('.*?'\))  # _('')で括られた文字列
+    (^|\W)_\('(.*?)'\)  # _('')で括られた文字列
 """, re.VERBOSE | re.MULTILINE)
 
 
@@ -46,9 +44,18 @@ def extract_msgids_from_string_literals(python_code: str) -> Iterator[str]:
 
 
 def cli_main():
+    from textwrap import dedent
     import sys
     from pathlib import Path
     from io import StringIO
+
+    if len(sys.argv) == 1:
+        print(dedent("""
+            Usage:
+                extract-msgids filename1.py filename2.py ...
+            """),
+            file=sys.stderr)
+        return
     output = StringIO()
     for file in sys.argv[1:]:
         for ls in extract_msgids_from_string_literals(Path(file).read_text(encoding='utf-8')):

@@ -21,20 +21,14 @@ def test_not_in_string_literal(extract, input):
 
 @pytest.mark.parametrize('input', [
     r'''"_('msgid')"''',
-    r'''"100 + _('msgid')"''',
-    r'''"_('msgid') + 100"''',
-])
-def test_in_string_literal_1(extract, input):
-    assert ["_('msgid')", ] == list(extract(input))
-
-
-@pytest.mark.parametrize('input', [
     r"""'_("msgid")'""",
+    r'''"100 + _('msgid')"''',
     r"""'100 + _("msgid")'""",
+    r'''"_('msgid') + 100"''',
     r"""'_("msgid") + 100'""",
 ])
-def test_in_string_literal_2(extract, input):
-    assert ['_("msgid")', ] == list(extract(input))
+def test_in_string_literal(extract, input):
+    assert ["msgid", ] == list(extract(input))
 
 
 def test_mixed(extract):
@@ -46,4 +40,4 @@ def test_mixed(extract):
             text: _("Hello") + _('World') + l._("!")
         """
         ''')
-    assert ['_("Hello")', "_('World')", '_("!")', ] == list(extract(py_source))
+    assert ["Hello", "World", "!", ] == list(extract(py_source))
