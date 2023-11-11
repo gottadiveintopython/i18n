@@ -1,0 +1,1 @@
+from ._extract_msgids_from_string_literals import extract_msgids_from_string_literals

@@ -27,8 +27,8 @@ class SampleApp(App):
 
     @staticmethod
     def setup_localizer():
-        from kivy_garden.i18n.localizer import KXLocalizer, DictBasedTranslator
-        translator = DictBasedTranslator({
+        from kivy_garden.i18n.localizer import Localizer, MappingBasedTranslatorFactory
+        factory = MappingBasedTranslatorFactory({
             'greeting': {
                 'ja': 'おはよう',
                 'ko': '안녕',
@@ -40,7 +40,7 @@ class SampleApp(App):
                 'fr': 'bonjour',
             }
         })
-        KXLocalizer(translator=translator).install(name='l')
+        Localizer(translator_factory=factory).install(name='l')
 
 
 if __name__ == '__main__':

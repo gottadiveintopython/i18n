@@ -28,12 +28,12 @@ class SampleApp(App):
     @staticmethod
     def setup_localizer():
         from pathlib import PurePath
-        from kivy_garden.i18n.localizer import KXLocalizer, GettextTranslator
-        translator = GettextTranslator(
+        from kivy_garden.i18n.localizer import Localizer, GettextBasedTranslatorFactory
+        factory = GettextBasedTranslatorFactory(
             domain='gettext_example',
             localedir=PurePath(__file__).parent / 'locales',
         )
-        KXLocalizer(translator=translator).install(name='l')
+        Localizer(translator_factory=factory).install(name='l')
 
 
 if __name__ == '__main__':
