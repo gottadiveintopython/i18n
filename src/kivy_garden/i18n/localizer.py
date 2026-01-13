@@ -1,20 +1,18 @@
-from __future__ import annotations
-
 __all__ = (
     # type hints
-    'Translator', 'TranslatorFactory', 'FontPicker',
+    "Translator", "TranslatorFactory", "FontPicker",
 
     # exceptions
-    'I18nError', 'FontNotFoundError',
+    "FontNotFoundError",
 
     # concrete TranslatorFactory
-    'GettextBasedTranslatorFactory', 'MappingBasedTranslatorFactory',
+    "GettextBasedTranslatorFactory", "MappingBasedTranslatorFactory",
 
     # concrete FontPicker
-    'DefaultFontPicker',
+    "DefaultFontPicker",
 
     #
-    'Localizer',
+    "Localizer",
 )
 
 from collections.abc import Callable, Mapping
@@ -27,6 +25,8 @@ from kivy.event import EventDispatcher
 from kivy.logger import Logger
 from kivy.uix.label import Label
 
+from .fontfinder import enum_pre_installed_fonts, font_supports_lang
+
 Msgid: TypeAlias = str
 Msgstr: TypeAlias = str
 Lang: TypeAlias = str
@@ -36,13 +36,7 @@ Font: TypeAlias = str
 FontPicker: TypeAlias = Callable[[Lang], Font]
 
 
-class I18nError(Exception):
-    '''Base class of all the module-specific exceptions'''
-
-
-class FontNotFoundError(I18nError):
-    '''Failed to find a font.'''
-
+class FontNotFoundError(Exception):
     @cached_property
     def lang(self) -> Lang:
         '''The language for which a localizer couldn't find a suitable font.'''
@@ -85,10 +79,9 @@ class Localizer(EventDispatcher):
         print(loc.font_name)  # => "/../NotoSerifCJK-Regular.ttc"
     '''
 
-    def __init__(self, *, lang: Lang='en', translator_factory: TranslatorFactory=None, font_picker: FontPicker=None):
+    def __init__(self, translator_factory: TranslatorFactory=None, *, lang: Lang='en', font_picker: FontPicker=None):
         if translator_factory is None:
-            Logger.warning(
-                f"kivy_garden.i18n: No translator_factory was provided. ``msgid``s themselves will be displaed.")
+            Logger.warning(f"kivy_garden.i18n: No translator_factory was provided. Msgid's themselves will be displayed.")
             translator_factory = lambda lang: lambda msgid: msgid
         if font_picker is None:
             font_picker = DefaultFontPicker()
@@ -111,19 +104,19 @@ class Localizer(EventDispatcher):
                 font_name: l.font_name
                 text: l._("msgid")
 
-        :raises I18nError: if the ``name`` has already been used.
+        :raises ValueError: if the ``name`` has already been used.
         '''
         from kivy.lang import global_idmap
         if name in global_idmap:
-            raise I18nError(f"The name {name!r} has already been used.")
+            raise ValueError(f"The name {name!r} has already been used.")
         global_idmap[name] = self
 
     def uninstall(self, *, name):
         from kivy.lang import global_idmap
         if name not in global_idmap:
-            raise I18nError(f"The name {name!r} not found.")
+            raise ValueError(f"The name {name!r} not found.")
         if global_idmap[name] is not self:
-            raise I18nError(f"The object referenced by {name!r} is not me.")
+            raise ValueError(f"The object referenced by {name!r} is not me.")
         del global_idmap[name]
 
     @staticmethod
@@ -135,17 +128,17 @@ class Localizer(EventDispatcher):
 
 class DefaultFontPicker:
     PRESET = {
-        'en': (v := 'Roboto'),
-        'fr': v,
-        'it': v,
-        'pt': v,
-        'ru': v,
+        "en": (v := "Roboto"),
+        "fr": v,
+        "it": v,
+        "pt": v,
+        "ru": v,
     }
     ''':meta private:'''
 
     del v
 
-    def __init__(self, *, fallback: Union[Lang, None]='Roboto'):
+    def __init__(self, *, fallback: Union[Lang, None]="Roboto"):
         self._lang2font = self.PRESET.copy()
         self._fallback = fallback
 
@@ -155,10 +148,9 @@ class DefaultFontPicker:
         except KeyError:
             pass
 
-        from .fontfinder import enum_pre_installed_fonts, can_render_lang
         name = None
         for font in enum_pre_installed_fonts():
-            if can_render_lang(font, lang):
+            if font_supports_lang(font, lang):
                 name = font.name
                 break
         if name is None:
@@ -182,23 +174,64 @@ class GettextBasedTranslatorFactory:
 
 
 class MappingBasedTranslatorFactory:
-    def __init__(self, table: Mapping[Msgid, Mapping[Lang, Msgstr]], /):
-        self._table = _reverse_mapping(table, nullable=False)
+    def __init__(self, translations: Mapping[Msgid, Mapping[Lang, Msgstr]], /, strict=False):
+        '''
+        :param strict:
+            If False (default), a missing translation falls back to the ``msgid`` itself.
+            If True, a missing translation raises ``ValueError``.
+        '''
+        self._compiled_translations = self._compile_translations(translations, strict=strict)
 
     def __call__(self, lang: Lang) -> Translator:
-        return self._table[lang].__getitem__
+        return self._compiled_translations[lang].__getitem__
 
+    @staticmethod
+    def _compile_translations(d: Mapping[Msgid, Mapping[Lang, Msgstr]], *, strict) -> dict[Lang, dict[Msgid, Msgstr]]:
+        '''
+        アプリ開発者側にとって嬉しいのは次のような形式の翻訳表だと思うが
 
-def _reverse_mapping(d: Mapping[Msgid, Mapping[Lang, Msgstr]], *, nullable=True) -> dict[Lang, dict[Msgid, Msgstr]]:
-    msgids = tuple(d.keys())
-    langs = set(itertools.chain.from_iterable(d.values()))
-    if nullable:
-        return {
-            lang: {msgid: d[msgid].get(lang, None) for msgid in msgids}
-            for lang in langs
-        }
-    else:
-        return {
-            lang: {msgid: d[msgid].get(lang, msgid) for msgid in msgids}
-            for lang in langs
-        }
+        .. code-block::
+
+            翻訳表 = {
+                "greeting": {
+                    "ja": "おはよう",
+                    "en": "morning",
+                },
+                "app title": {
+                    "ja": "初めてのKivyプログラム",
+                    "en": "My First Kivy App",
+                },
+            }
+
+        ライブラリが内部で持ちたいのは次の形式の翻訳表である。
+
+        .. code-block::
+
+            翻訳表 = {
+                "ja": {
+                    "greeting": "おはよう",
+                    "app title": "初めてのKivyプログラム",
+                },
+                "en": {
+                    "greeting": "morning",
+                    "app title": "My First Kivy App",
+                },
+            }
+
+        この関数は前者を後者に変換する。
+        '''
+        msgids = tuple(d.keys())
+        langs = set(itertools.chain.from_iterable(d.values()))
+        if strict:
+            try:
+                return {
+                    lang: {msgid: d[msgid][lang] for msgid in msgids}
+                    for lang in langs
+                }
+            except KeyError as e:
+                raise ValueError(f"Msgid '{e.args[0]}' is missing one or more translations") from e
+        else:
+            return {
+                lang: {msgid: d[msgid].get(lang, msgid) for msgid in msgids}
+                for lang in langs
+            }

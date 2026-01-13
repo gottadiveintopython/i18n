@@ -89,19 +89,19 @@ def test_kv_binding():
 
 def test_reverse_mapping():
     import types
-    from kivy_garden.i18n.localizer import _reverse_mapping
+    from kivy_garden.i18n.localizer import _compile_translations
 
     input = types.MappingProxyType({
         'greeting': {'en': 'hello', 'zh': '安安', },
         'apple': {'zh': '蘋果', 'ja': '林檎', },
         'butter': {},
     })
-    assert _reverse_mapping(input, nullable=True) == {
+    assert _compile_translations(input, nullable=True) == {
         'zh': {'greeting': '安安', 'apple': '蘋果', 'butter': None, },
         'ja': {'greeting': None, 'apple': '林檎', 'butter': None, },
         'en': {'greeting': 'hello', 'apple': None, 'butter': None, },
     }
-    assert _reverse_mapping(input, nullable=False) == {
+    assert _compile_translations(input, nullable=False) == {
         'zh': {'greeting': '安安', 'apple': '蘋果', 'butter': 'butter', },
         'ja': {'greeting': 'greeting', 'apple': '林檎', 'butter': 'butter', },
         'en': {'greeting': 'hello', 'apple': 'apple', 'butter': 'butter', },

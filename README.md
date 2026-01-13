@@ -2,7 +2,6 @@
 
 Internationalization support for Kivy applications.
 
-
 ```python
 from kivy_garden.i18n.localizer import MappingBasedTranslatorFactory, Localizer
 
@@ -45,7 +44,7 @@ Label:
 localizer.lang = "en"
 assert label.font_name == "Roboto"
 assert label.text == "morning"
-l.lang = "ja"
+localizer.lang = "ja"
 assert label.font_name == "<a pre-installed Japanese font>"
 assert label.text == "おはよう"
 ```

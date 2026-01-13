@@ -7,17 +7,37 @@ If all you want is to use pre-installed fonts to save space, this is the guide f
 Step 1: Locate pre-installed fonts
 ==================================
 
+Enumerate pre-installed fonts and check whether they provide the characters you need.
+
+.. code-block::
+
+    from kivy_garden.i18n.fontfinder import (
+        enum_pre_installed_fonts,
+        font_provides_glyphs,
+    )
+
+    for font in enum_pre_installed_fonts():
+        if font_provides_glyphs(font, "哪經傳說経伝説经传说한글ひらABC"):
+            print("Found a font that likely provides CJK glyphs:", font.name)
+            break
+    else:
+        raise Exception("Couldn't find a font that provides CJK glyphs")
+
+
+Step 1: Locate pre-installed fonts
+==================================
+
 Enumerate pre-installed fonts and check whether they are capable of rendering the languages you need.
 
 .. code-block::
 
     from kivy_garden.i18n.fontfinder import (
         enum_pre_installed_fonts,
-        can_render_lang,
+        font_supports_lang,
     )
 
     for font in enum_pre_installed_fonts():
-        if can_render_lang(font, "ja"):
+        if font_supports_lang(font, "ja"):
             print("Found a Japanese font:", font.name)
             break
     else:
@@ -39,7 +59,7 @@ That's it.
 However, not all languages are supported by default
 ===================================================
 
-The ``can_render_lang()`` API does not offer support for all languages by default.
+The ``font_supports_lang()`` API does not offer support for all languages by default.
 If a language is not supported, you will need to register it first:
 
 .. code-block::
@@ -49,7 +69,7 @@ If a language is not supported, you will need to register it first:
     register_lang('th', "ราชอAB")  # Thai language
 
     for font in enum_pre_installed_fonts():
-        if can_render_lang(font, 'th'):
+        if font_supports_lang(font, 'th'):
             print("Found a Thai font:", font.name)
 
 You may have noticed the ``AB`` in the code above.
