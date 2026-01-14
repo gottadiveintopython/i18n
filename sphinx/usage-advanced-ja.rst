@@ -1,11 +1,10 @@
-==============
-Advanced Usage
-==============
+===================
+Advanced Usage |ja|
+===================
 
 If you want to use other types of text sources, you'll need to create your own ``TranslatorFactory``.
 And if you want to customize the way the ``Localizer`` picks fonts, you'll need to create your own ``FontPicker``.
 
-.. automethod:: kivy_garden.i18n.localizer.Localizer.__init__
 
 * ``TranslatorFactory`` must be a callable that takes a string representing a language, and returns a ``Translator``.
 * ``Translator`` must be a callable that takes a ``msgid``, and returns a ``msgstr``.

@@ -68,7 +68,7 @@ class Localizer(EventDispatcher):
     font_name: Font = StringProperty(Label.font_name.defaultvalue)
     '''
     (read-only)
-    A font that is capable of rendering the "current language".
+    A font that provides the glyphs required for rendering the "current language".
 
     .. code-block::
 
@@ -76,7 +76,7 @@ class Localizer(EventDispatcher):
         loc.lang = "en"
         print(loc.font_name)  # => "Roboto"
         loc.lang = "ko"
-        print(loc.font_name)  # => "/../NotoSerifCJK-Regular.ttc"
+        print(loc.font_name)  # => "<a pre-installed Korean font>"
     '''
 
     def __init__(self, translator_factory: TranslatorFactory=None, *, lang: Lang='en', font_picker: FontPicker=None):

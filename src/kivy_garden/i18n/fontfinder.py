@@ -1,6 +1,6 @@
 __all__ =(
     "enum_pre_installed_fonts", "default_filter", "enum_langs", "register_lang",
-    "font_provides_glyphs", "is_lang_supported",
+    "font_provides_glyphs", "font_supports_lang",
 )
 
 from typing import Union
@@ -11,7 +11,7 @@ from kivy.core.text import LabelBase, Label as CoreLabel
 
 def default_filter(font: PurePath, suffixes={".ttf", ".otf", ".ttc", ".woff", ".woff2"}) -> bool:
     '''
-    The default *filter* for :func:`enum_pre_installed_fonts`.
+    The default filter for :func:`enum_pre_installed_fonts`.
 
     Returns True if ``font`` has one of the specified suffixes and its filename
     does not contain ``"fallback"``.
@@ -28,7 +28,7 @@ def enum_pre_installed_fonts(*, filter: Callable[[PurePath], bool]=default_filte
 
 def font_provides_glyphs(font: str | Path, glyphs: str) -> bool:
     '''
-    Whether a specified ``font`` supports all of the given ``glyphs``.
+    Whether a specified ``font`` provides all of the given ``glyphs``.
 
     :param glyphs: A string consisting of three or more unique characters.
 
@@ -41,7 +41,7 @@ def font_provides_glyphs(font: str | Path, glyphs: str) -> bool:
         assert not f("Roboto", "漢字한글ひら")
         assert not f("Roboto", "漢字한글ひらABC")
 
-        # NotoSerifCJK supports CJK and ASCII glyphs.
+        # NotoSerifCJK provides ASCII and CJK glyphs.
         assert f("NotoSerifCJK-Regular.ttc", "ABC")
         assert f("NotoSerifCJK-Regular.ttc", "漢字한글ひら")
         assert f("NotoSerifCJK-Regular.ttc", "漢字한글ひらABC")
@@ -51,9 +51,10 @@ def font_provides_glyphs(font: str | Path, glyphs: str) -> bool:
         assert f("DroidSansFallbackFull.ttf", "漢字한글ひら")
         assert not f("DroidSansFallbackFull.ttf", "漢字한글ひらABC")
 
-    .. note::
+    .. warning::
 
-        Providing more glyphs improves accuracy, but increases the execution time.
+        This function does not produce 100% accurate results.
+        Providing more glyphs improves accuracy at the cost of execution time.
     '''
     if not _validate_discriminant(glyphs):
         raise ValueError(f"'glyphs' must consist of three or more unique characters (was {glyphs!r})")
@@ -106,7 +107,7 @@ DISCRIMINANTS = {
 
 def font_supports_lang(font: Union[str, Path], lang: str) -> bool:
     '''
-    Whether a specified ``font`` is capable of rendering a specified ``lang``.
+    Whether a specified ``font`` provides the glyphs required for a specified ``lang``.
 
     .. code-block::
 
@@ -124,11 +125,16 @@ def font_supports_lang(font: Union[str, Path], lang: str) -> bool:
         assert not f("DroidSansFallbackFull.ttf", "zh")
         assert not f("DroidSansFallbackFull.ttf", "ko")
         assert not f("DroidSansFallbackFull.ttf", "ja")
+
+    .. warning::
+
+        This function does not produce 100% accurate results.
     '''
     try:
         glyphs = DISCRIMINANTS[lang]
     except KeyError:
-        raise ValueError(f"Unable to check language support: {lang = }.\n" "Register the language first using 'register_lang' function.")                         )
+        raise ValueError(f"Unable to check language support: {lang = }.\n"
+                         "Register the language first using 'register_lang' function.")
     return font_provides_glyphs(font, glyphs)
 
 
@@ -141,7 +147,7 @@ def enum_langs() -> Iterator[str]:
 
 def register_lang(lang: str, discriminant: str):
     '''
-    Enable a language in the :func:`font_supports_lang`.
+    Enables a language in the :func:`font_supports_lang`.
 
     .. code-block::
 

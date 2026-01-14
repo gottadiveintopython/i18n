@@ -11,7 +11,10 @@ project = 'i18n'
 copyright = '2023, Mitō Nattōsai'
 author = 'Mitō Nattōsai'
 release = importlib.metadata.version('kivy_garden.i18n')
-
+rst_epilog = """
+.. |ja| replace:: 🇯🇵
+.. _gettext: https://www.gnu.org/software/gettext/
+"""
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

@@ -15,6 +15,7 @@ BoxLayout:
     Label:
         font_name: l.font_name
         font_size: sp(40)
+        font_direction: "rtl" if l.lang == "ar" else "ltr"
         text: l._("greeting")
 '''
 

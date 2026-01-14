@@ -13,7 +13,7 @@ The other option is a :class:`collections.abc.Mapping` object like this:
 
 .. code-block::
 
-    table = {
+    translations = {
         "greeting": {
             "ja": "おはよう",
             "en": "morning",
@@ -23,8 +23,6 @@ The other option is a :class:`collections.abc.Mapping` object like this:
             "en": "My First Kivy App",
         },
     }
-
-.. _gettext: https://www.gnu.org/software/gettext/
 
 
 Step 2: Create a TranslatorFactory
@@ -43,7 +41,7 @@ Create a "translator factory" from the translations you created in Step 1.
     factory = GettextBasedTranslatorFactory(domain, localedir)
 
     # mapping
-    factory = MappingBasedTranslatorFactory(table)
+    factory = MappingBasedTranslatorFactory(translations)
 
 (``domain`` and ``localedir`` are passed to :func:`gettext.translation`).
 
@@ -57,14 +55,14 @@ Create a :class:`~kivy_garden.i18n.localizer.Localizer` instance from the "trans
 
     from kivy_garden.i18n.localizer import Localizer
 
-    localizer = Localizer(translator_factory=factory)
+    localizer = Localizer(factory)
 
 
 Done
 ====
 
 That's it.
-You can now ask it "What's the translation of this word?" or "Which font is suitable for your current language?":
+You can now ask it "What's the translation of this message?" or "Which font is suitable for your current language?":
 
 .. code-block::
 
@@ -75,12 +73,12 @@ You can now ask it "What's the translation of this word?" or "Which font is suit
     print(l._("app title"))  # => My First Kivy App
 
     l.lang = "ja"
-    print(l.font_name)  # => <The name of a pre-installed Japanese font>
+    print(l.font_name)  # => <a pre-installed Japanese font>
     print(l._("greeting"))  # => おはよう
     print(l._("app title"))  # => 初めてのKivyプログラム
 
-In addition, since the ``localizer`` is a :class:`kivy.event.EventDispatcher`,
-and both ``localizer.font_name`` and ``localizer._`` are Kivy properties,
+In addition, since the ``Localizer`` is a :class:`kivy.event.EventDispatcher`,
+and both ``Localizer.font_name`` and ``Localizer._`` are Kivy properties,
 you can leverage Kivy's auto-binding feature:
 
 .. code-block::
@@ -99,4 +97,3 @@ you can leverage Kivy's auto-binding feature:
 When ``localizer.lang`` changes, ``localizer._`` and ``localizer.font_name`` will also change,
 which causes the ``l.font_name`` and ``l._("greeting")`` above to be re-evaluated.
 Great! You now have a label that dynamically updates its ``text`` and ``font_name`` whenever ``localizer.lang`` changes.
-

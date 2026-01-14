@@ -5,7 +5,7 @@ Internationalization support for Kivy applications.
 ```python
 from kivy_garden.i18n.localizer import MappingBasedTranslatorFactory, Localizer
 
-translation_table = {
+translations = {
     "greeting": {
         "ja": "おはよう",
         "en": "morning",
@@ -15,8 +15,7 @@ translation_table = {
         "en": "My First Kivy App",
     },
 }
-factory = MappingBasedTranslatorFactory(translation_table)
-localizer = Localizer(translator_factory=factory)
+localizer = Localizer(MappingBasedTranslatorFactory(translations))
 
 l = localizer
 l.lang = "en"  # Set the "current language" to "en"
@@ -30,7 +29,7 @@ assert l._("greeting") == "おはよう"
 assert l._("app title") == "初めてのKivyプログラム"
 ```
 
-Bindings.
+Bindings:
 
 ```python
 from kivy.lang import Builder

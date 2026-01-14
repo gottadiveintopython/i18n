@@ -7,6 +7,8 @@ from pathlib import Path
     ("hoge.ttf", True),
     ("hoge.otf", True),
     ("hoge.ttc", True),
+    ("hoge.woff", True),
+    ("hoge.woff2", True),
     ("hoge.jpg.ttf", True),
     ("hoge.jpg", False),
     ("hoge.ttf.jpg", False),
@@ -27,6 +29,7 @@ def test_enum_pre_installed_fonts():
         pytest.skip("No font was found on this system")
     else:
         assert isinstance(font, Path)
+        assert font.is_file()
 
 
 @pytest.fixture(scope='module')
@@ -37,7 +40,7 @@ def cjk_font():
             return font
 
 
-class Test_can_render_text:
+class Test_font_provides_glyphs:
     @p("text", ["", "A", "AB", "AAB", ])
     def test_invalid_arg(self, text):
         from kivy_garden.i18n.fontfinder import font_provides_glyphs
@@ -68,7 +71,7 @@ class Test_can_render_text:
             assert font_provides_glyphs(cjk_font, text) is outcome
 
 
-class Test_can_render_lang:
+class Test_font_supports_lang:
     @p("lang", "zh ko ja".split())
     def test_cjk(self, cjk_font, lang):
         from kivy_garden.i18n.fontfinder import font_supports_lang

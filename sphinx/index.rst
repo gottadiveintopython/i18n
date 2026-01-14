@@ -12,4 +12,7 @@ It is also useful if you don't need i18n support but want to use pre-installed f
    :maxdepth: 1
 
    usage
+   usage-ja
    usage-no-i18n
+   usage-no-i18n-ja
+   api-reference

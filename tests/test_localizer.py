@@ -3,13 +3,13 @@ import pytest
 
 def test_install():
     from kivy.lang import global_idmap
-    from kivy_garden.i18n.localizer import Localizer, I18nError
+    from kivy_garden.i18n.localizer import Localizer
     loc = Localizer()
     loc.install(name='l')
     assert global_idmap['l'] is loc
 
     # name confliction
-    with pytest.raises(I18nError):
+    with pytest.raises(ValueError):
         loc.install(name='l')
 
     loc.uninstall(name='l')
@@ -87,22 +87,36 @@ def test_kv_binding():
     label.font_name = 'Roboto'
 
 
-def test_reverse_mapping():
+@pytest.mark.parametrize("strict", [True, False])
+def test_compile_translations(strict):
     import types
-    from kivy_garden.i18n.localizer import _compile_translations
+    from kivy_garden.i18n.localizer import MappingBasedTranslatorFactory
+    _compile_translations = MappingBasedTranslatorFactory._compile_translations
 
-    input = types.MappingProxyType({
-        'greeting': {'en': 'hello', 'zh': '安安', },
-        'apple': {'zh': '蘋果', 'ja': '林檎', },
-        'butter': {},
+    source = types.MappingProxyType({
+        'greeting': {"ko": "안녕", "zh": "安安", },
+        "apple": {"ko": "사과", "zh": "蘋果", },
     })
-    assert _compile_translations(input, nullable=True) == {
-        'zh': {'greeting': '安安', 'apple': '蘋果', 'butter': None, },
-        'ja': {'greeting': None, 'apple': '林檎', 'butter': None, },
-        'en': {'greeting': 'hello', 'apple': None, 'butter': None, },
+    assert _compile_translations(source, strict=strict) == {
+        "ko": {"greeting": "안녕", "apple": "사과", },
+        'zh': {"greeting": "安安", "apple": "蘋果", },
     }
-    assert _compile_translations(input, nullable=False) == {
-        'zh': {'greeting': '安安', 'apple': '蘋果', 'butter': 'butter', },
-        'ja': {'greeting': 'greeting', 'apple': '林檎', 'butter': 'butter', },
-        'en': {'greeting': 'hello', 'apple': 'apple', 'butter': 'butter', },
-    }
+
+
+@pytest.mark.parametrize("strict", [True, False])
+def test_compile_incomplete_translations(strict):
+    import types
+    from contextlib import nullcontext
+    from kivy_garden.i18n.localizer import MappingBasedTranslatorFactory
+    _compile_translations = MappingBasedTranslatorFactory._compile_translations
+
+    # The "apple" msgid is missing a "ko" translation.
+    source = types.MappingProxyType({
+        'greeting': {"ko": "안녕", "zh": "安安", },
+        "apple": {"zh": "蘋果", },
+    })
+    with pytest.raises(ValueError) if strict else nullcontext():
+        assert _compile_translations(source, strict=strict) == {
+            "ko": {"greeting": "안녕", "apple": "apple", },
+            'zh': {"greeting": "安安", "apple": "蘋果", },
+        }
