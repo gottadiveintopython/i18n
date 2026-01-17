@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Usage (No i18n) &#8212; i18n 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=9550617d" />
+    <script src="_static/documentation_options.js?v=e259d695"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage (No i18n) 🇯🇵" href="usage-no-i18n-ja.html" />
+    <link rel="prev" title="Usage 🇯🇵" href="usage-ja.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="usage-no-i18n">
+<h1>Usage (No i18n)<a class="headerlink" href="#usage-no-i18n" title="Link to this heading">¶</a></h1>
+<p>If all you want is to use pre-installed fonts to save space, this is the guide for you.</p>
+<section id="step-1-locate-pre-installed-fonts">
+<h2>Step 1: Locate pre-installed fonts<a class="headerlink" href="#step-1-locate-pre-installed-fonts" title="Link to this heading">¶</a></h2>
+<p>Enumerate the pre-installed fonts and check whether they support the language you need.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">kivy_garden.i18n.fontfinder</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">enum_pre_installed_fonts</span><span class="p">,</span>
+    <span class="n">font_supports_lang</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">enum_pre_installed_fonts</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">font_supports_lang</span><span class="p">(</span><span class="n">font</span><span class="p">,</span> <span class="s2">&quot;ja&quot;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found a Japanese font:&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find a Japanese font&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-2-set-the-font-as-default-before-creating-any-widgets">
+<h2>Step 2: Set the font as default before creating any widgets<a class="headerlink" href="#step-2-set-the-font-as-default-before-creating-any-widgets" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">kivy.core.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabelBase</span><span class="p">,</span> <span class="n">DEFAULT_FONT</span>
+
+<span class="n">LabelBase</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">DEFAULT_FONT</span><span class="p">,</span> <span class="n">font</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That’s it.</p>
+</section>
+<section id="however-not-all-languages-are-supported-by-default">
+<h2>However, not all languages are supported by default<a class="headerlink" href="#however-not-all-languages-are-supported-by-default" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="api-reference.html#kivy_garden.i18n.fontfinder.font_supports_lang" title="kivy_garden.i18n.fontfinder.font_supports_lang"><code class="xref py py-func docutils literal notranslate"><span class="pre">font_supports_lang()</span></code></a> does not support all languages out of the box.
+If a language is not supported, you need to register it first:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">kivy_garden.i18n.fontfinder</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_lang</span>
+
+<span class="n">register_lang</span><span class="p">(</span><span class="s2">&quot;th&quot;</span><span class="p">,</span> <span class="s2">&quot;ราชอAB&quot;</span><span class="p">)</span>  <span class="c1"># Thai language</span>
+
+<span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">enum_pre_installed_fonts</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">font_supports_lang</span><span class="p">(</span><span class="n">font</span><span class="p">,</span> <span class="s2">&quot;th&quot;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found a Thai font:&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively, you can use <a class="reference internal" href="api-reference.html#kivy_garden.i18n.fontfinder.font_provides_glyphs" title="kivy_garden.i18n.fontfinder.font_provides_glyphs"><code class="xref py py-func docutils literal notranslate"><span class="pre">font_provides_glyphs()</span></code></a> directly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">kivy_garden.i18n.fontfinder</span><span class="w"> </span><span class="kn">import</span> <span class="n">font_provides_glyphs</span>
+
+<span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">enum_pre_installed_fonts</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">font_provides_glyphs</span><span class="p">(</span><span class="n">font</span><span class="p">,</span> <span class="s2">&quot;ราชอAB&quot;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found a Thai font:&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You may have noticed the <code class="docutils literal notranslate"><span class="pre">AB</span></code> in the example above.
+If you don’t include ASCII characters, you might end up selecting a font that cannot render them,
+such as a fallback font, which is probably not what you want.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">i18n</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage-ja.html">Usage 🇯🇵</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage (No i18n)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage-no-i18n-ja.html">Usage (No i18n) 🇯🇵</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage-ja.html" title="previous chapter">Usage 🇯🇵</a></li>
+      <li>Next: <a href="usage-no-i18n-ja.html" title="next chapter">Usage (No i18n) 🇯🇵</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023, Mitō Nattōsai.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/usage-no-i18n.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
