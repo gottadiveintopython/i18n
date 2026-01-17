@@ -1,17 +1,18 @@
-i18n
-====
+kivy_garden.i18n
+================
 
-A library that assists in creating a Kivy app with internationalization support.
+This library provides internationalization (i18n) support for Kivy applications.
+It is also useful if you don't need i18n support but want to use pre-installed fonts to save space.
 
-It's composed of the following two primary components:
-
-* The **Font Finder** helps you find fonts.
-  If your app doesn't need i18n support, and you just want to use pre-installed fonts to saving space, you probably only need this.
-* The **Localizer** helps you switch texts and fonts according to "current language".
+* Go to :doc:`usage` if you are the former.
+* Go to :doc:`usage-no-i18n` if you are the latter.
 
 .. toctree::
    :hidden:
    :maxdepth: 1
 
-   fontfinder
-   localizer
+   usage
+   usage-ja
+   usage-no-i18n
+   usage-no-i18n-ja
+   api-reference

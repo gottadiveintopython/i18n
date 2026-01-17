@@ -7,6 +7,8 @@ from pathlib import Path
     ("hoge.ttf", True),
     ("hoge.otf", True),
     ("hoge.ttc", True),
+    ("hoge.woff", True),
+    ("hoge.woff2", True),
     ("hoge.jpg.ttf", True),
     ("hoge.jpg", False),
     ("hoge.ttf.jpg", False),
@@ -27,6 +29,7 @@ def test_enum_pre_installed_fonts():
         pytest.skip("No font was found on this system")
     else:
         assert isinstance(font, Path)
+        assert font.is_file()
 
 
 @pytest.fixture(scope='module')
@@ -37,12 +40,12 @@ def cjk_font():
             return font
 
 
-class Test_can_render_text:
+class Test_font_provides_glyphs:
     @p("text", ["", "A", "AB", "AAB", ])
     def test_invalid_arg(self, text):
-        from kivy_garden.i18n.fontfinder import can_render_text
+        from kivy_garden.i18n.fontfinder import font_provides_glyphs
         with pytest.raises(ValueError):
-            can_render_text("Roboto", text)
+            font_provides_glyphs("Roboto", text)
 
     @p("text, outcome", [
         ("ABC", True),
@@ -51,8 +54,8 @@ class Test_can_render_text:
         ("漢字한글そはABC", False),
     ])
     def test_roboto(self, text, outcome):
-        from kivy_garden.i18n.fontfinder import can_render_text
-        assert can_render_text("Roboto", text) is outcome
+        from kivy_garden.i18n.fontfinder import font_provides_glyphs
+        assert font_provides_glyphs("Roboto", text) is outcome
 
     @p("text, outcome", [
         ("ABC", True),
@@ -61,21 +64,21 @@ class Test_can_render_text:
         ("漢字한글そはABC", True),
     ])
     def test_cjk(self, cjk_font, text, outcome):
-        from kivy_garden.i18n.fontfinder import can_render_text
+        from kivy_garden.i18n.fontfinder import font_provides_glyphs
         if cjk_font is None:
             pytest.skip("No CJK font was found on this system.")
         else:
-            assert can_render_text(cjk_font, text) is outcome
+            assert font_provides_glyphs(cjk_font, text) is outcome
 
 
-class Test_can_render_lang:
+class Test_font_supports_lang:
     @p("lang", "zh ko ja".split())
     def test_cjk(self, cjk_font, lang):
-        from kivy_garden.i18n.fontfinder import can_render_lang
+        from kivy_garden.i18n.fontfinder import font_supports_lang
         if cjk_font is None:
             pytest.skip("No CJK font was found on this system.")
-        assert can_render_lang(cjk_font, lang)
-        assert not can_render_lang("Roboto", lang)
+        assert font_supports_lang(cjk_font, lang)
+        assert not font_supports_lang("Roboto", lang)
 
 
 class Test_register_lang:
