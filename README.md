@@ -53,7 +53,7 @@ assert label.text == "おはよう"
 Pin the minor version.
 
 ```
-pip install "kivy-garden-i18n>=0.2,<0.3"
+pip install "kivy-garden-i18n>=0.3,<0.4"
 ```
 
 # Tested on
